@@ -19,15 +19,15 @@ public class GoodsController {
     GoodsService goodsService;
 
     @ApiOperation("根据id查找商品")
-    @GetMapping("/getGoods/{id}")
-    public ResponseEntity<Goods> getGoods(@PathVariable("id") String id)
+    @GetMapping("")
+    public ResponseEntity<Goods> getGoods(String id)
     {
         return ResponseEntity.ok(goodsService.getGood(id));
     }
 
     @ApiOperation("根据关键字查找商品")
-    @GetMapping("/findGoods/{name}")
-    public ResponseEntity<List<Goods>> findGoods(@PathVariable("name") String name)
+    @GetMapping("")
+    public ResponseEntity<List<Goods>> findGoods(String name)
     {
         return ResponseEntity.ok(goodsService.findGood(name));
     }
