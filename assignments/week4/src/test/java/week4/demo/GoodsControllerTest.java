@@ -15,7 +15,6 @@ import week4.demo.Controller.GoodsController;
 import week4.demo.Entity.Goods;
 import week4.demo.Service.GoodsService;
 
-import static org.apache.logging.log4j.message.MapMessage.MapFormat.JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest({GoodsController.class, GoodsService.class})
