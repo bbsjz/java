@@ -19,13 +19,16 @@ import java.util.Map;
 @Aspect
 @Component
 public class APIMonitor {
+    //存储每个API被调用的次数
     Map<String, Integer> APICallingTime=new HashMap<>();
+    //存储每个API运行的时长
     Map<String, Time> APIProceedingTime=new HashMap<>();
+    //存储每个API发生异常的次数
     Map<String, Integer> APIExceptionTime=new HashMap<>();
     Logger logger= LoggerFactory.getLogger(getClass());
 
     @Before("within(com.controller)")
-    public void statisticCallingTime(JoinPoint jp)
+    public void statisticCallingTimes(JoinPoint jp)
     {
         String APIName=jp.getSignature().toString();
         if(APICallingTime.get(APIName)==null)
@@ -41,9 +44,15 @@ public class APIMonitor {
     }
 
     @Around("within(com.controller)")
-    public void statisticAPITime(ProceedingJoinPoint jp) throws Throwable {
+    public void statisticProceedingTimes(ProceedingJoinPoint jp) throws Throwable {
         long tb = Calendar.getInstance().getTimeInMillis();
-        jp.proceed();
+        try{
+            jp.proceed();
+        }
+        catch(Exception ex)
+        {
+            statisticExceptionTime(jp.getSignature().toString());
+        }
         long ta = Calendar.getInstance().getTimeInMillis();
         String APIName=jp.getSignature().toString();
         long t=ta-tb;
@@ -70,24 +79,45 @@ public class APIMonitor {
             total+=1;
             double tAverage=tSum/total;
             time.setTotal(total);
+            time.setAverageTime(tAverage);
             APIProceedingTime.put(APIName,time);
+        }
+    }
+
+    public void statisticExceptionTime(String name)
+    {
+        if(APIExceptionTime.get(name)==null)
+        {
+            APIExceptionTime.put(name,1);
+        }
+        else
+        {
+            int times =APIExceptionTime.get(name);
+            times+=1;
+            APIExceptionTime.put(name,times);
         }
     }
 
     @After("within(com.controller)")
     public void log()
     {
-
-
-
-    }
-
-    public void print(Map<String,Object> map)
-    {
-        for(String key:map.keySet())
+        logger.info("API调用次数表/n");
+        for(String key:APICallingTime.keySet())
         {
+            logger.info(key+":"+APICallingTime.get(key)+"/n");
+        }
+        logger.info("API运行时长信息/n");
+        for(String key:APIProceedingTime.keySet())
+        {
+            logger.info(key+":"+APIProceedingTime.get(key)+"/n");
+        }
+        logger.info("API发生异常信息/n");
+        for(String key:APIExceptionTime.keySet())
+        {
+            logger.info(key+":"+APIExceptionTime.get(key)+"/n");
         }
     }
+
 }
 
 
