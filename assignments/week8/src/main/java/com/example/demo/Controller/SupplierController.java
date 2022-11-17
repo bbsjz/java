@@ -73,6 +73,7 @@ public class SupplierController {
 
     @ApiModelProperty("根据供应商姓名关键字，供应数量，供应数量排序查找供应商")
     @GetMapping("")
+    @PreAuthorize("hasAuthority('query')")
     public ResponseEntity<List<Supplier>> findSupplier(String key, int quantity, boolean asc)
     {
         List<Supplier> list=supplierService.findSupplier(key,quantity,asc);
